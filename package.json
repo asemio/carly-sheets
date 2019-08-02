@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin": {
-      "carly-sheets": "node ./index.js"
+      "carly-sheets": "cli-run.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
