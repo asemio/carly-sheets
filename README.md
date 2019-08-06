@@ -29,9 +29,7 @@ npx github:asemio/carly-sheets
 
 `carly-sheets` will prompt you for a few pieces of information:
 
-* `sheet` The ID of the google sheet. This will be a string of letters and numbers in the URL of a Google Sheet:
-
-![illustration of getting ID from sheet](https://help.form.io/assets/img/googlesheet/googlesheet-spreadsheet.png)
+* `sheet` The ID of the google sheet. This will be a string of letters and numbers in the URL of a Google Sheet. ([more info on getting the spreadsheet ID](https://developers.google.com/sheets/api/guides/concepts))
 
 * `est`/`estimatesRange` The cell range of the estimates. For the estimates above (assuming they're in a sheet called `Estimates`), the range would be `Estimates!A2:A6`
 
