@@ -15,6 +15,7 @@ const argv = yargs
   .alias('sheet', 'sheetId')
   .alias('est', 'estimatesRange')
   .alias('stddev', 'standardDeviationsRange')
+  .alias('out', 'output')
   .argv;
 
 async function runProgram() {
@@ -40,28 +41,22 @@ Range of cells containing estimates: `;
     argv.stddev = await promptForInputLine('Range of cells containing standard deviations: ');
   }
 
+  while(argv.out == null) {
+    console.log("Please specify the cell where you want the simulations to be written");
+    console.log("\t(hint: you can also specify this with something like 'carly-sheets --out \"Sheet2!b2\")'");
+    argv.out = await promptForInputLine('Topmost cell for output: ');
+  }
+
   await runSimulations(auth);
 }
 
 async function runSimulations(auth) {
   const sheets = google.sheets({version: 'v4', auth});
 
-  const sheetObjects = await sheetsApi.getSheetsAsync(sheets, argv.sheet);
-
-  const oldSheet = sheetObjects.find(x => x.properties.title === 'Simulations');
-
-  if(oldSheet != null) {
-    console.log("Found sheet named 'Simulations', deleting...");
-    await sheetsApi.deleteSheetAsync(sheets, argv.sheet, oldSheet.properties.sheetId);
-  }
-
-  const targetSheet = await sheetsApi.createSheetAsync(sheets, argv.sheet, 'Simulations');
-
   const estimateValues = (await sheetsApi.getCellsAsync(sheets, argv.sheet, argv.est))
     .map(x => x[0]);
   const stdDevValues = (await sheetsApi.getCellsAsync(sheets, argv.sheet, argv.stddev))
     .map(x => x[0]);
-
 
   if(estimateValues.length !== stdDevValues.length) {
     console.log(`Ranges '${argv.est}' and '${argv.stddev}' should contain the same number of rows`);
@@ -79,7 +74,11 @@ async function runSimulations(auth) {
 
   console.log("Writing data...");
 
-  await sheetsApi.writeCellsAsync(sheets, argv.sheet, 'Simulations', outputRows);
+  const simulationValues = [...Array(1000)]
+    .map((row, rowIdx) => outputRows.reduce((agg, v) => agg + v[rowIdx], 0));
+  simulationValues.sort((a, b) => a - b);
+
+  await sheetsApi.writeColumnAsync(sheets, argv.sheet, argv.out, simulationValues);
 
   console.log("Done!");
 }

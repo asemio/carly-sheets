@@ -91,10 +91,29 @@ async function writeCellsAsync(sheets, spreadsheetId, sheetName, columns) {
   }
 }
 
+async function writeColumnAsync(sheets, spreadsheetId, cellReference, values) {
+  await new Promise((resolve, reject) =>
+    sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: cellReference,
+      valueInputOption: "RAW",
+      resource: {
+        majorDimension: "ROWS",
+        values: values.map(x => [x])
+      }
+    }, (err, res) => {
+      if (err) return reject(err);
+      resolve();
+    })
+  );
+
+}
+
 module.exports = {
   getSheetsAsync,
   deleteSheetAsync,
   createSheetAsync,
   getCellsAsync,
-  writeCellsAsync
+  writeCellsAsync,
+  writeColumnAsync
 };
