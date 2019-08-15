@@ -69,7 +69,7 @@ async function runSimulations(auth) {
     const stdDev = stdDevValues[idx] / estimate;
     const distribution = random.logNormal(0, stdDev);
 
-    return [...Array(1000)].map(() => (estimate * distribution()) || estimate);
+    return [...Array(1000)].map(() => (estimate * distribution()) || parseFloat(estimate));
   });
 
   const simulationValues = [...Array(1000)]
