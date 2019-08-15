@@ -69,14 +69,14 @@ async function runSimulations(auth) {
     const stdDev = stdDevValues[idx] / estimate;
     const distribution = random.logNormal(0, stdDev);
 
-    return [...Array(1000)].map(() => estimate * distribution());
+    return [...Array(1000)].map(() => (estimate * distribution()) || 0);
   });
-
-  console.log("Writing data...");
 
   const simulationValues = [...Array(1000)]
     .map((row, rowIdx) => outputRows.reduce((agg, v) => agg + v[rowIdx], 0));
   simulationValues.sort((a, b) => a - b);
+
+  console.log(`Writing ${simulationValues.length} cells to ${argv.out}...`);
 
   await sheetsApi.writeColumnAsync(sheets, argv.sheet, argv.out, simulationValues);
 
